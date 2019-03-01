@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as request;
+import 'package:ilovefilm/page/film_detail_page.dart';
 import 'package:ilovefilm/util/film_dialog_util.dart';
 import 'package:html/parser.dart' show parse;
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
@@ -138,7 +139,9 @@ class _FilmListPageState extends State<FilmListPage> with AutomaticKeepAliveClie
                 Image.network(filmBody.img),
                 Container(padding: EdgeInsets.all(8.0),child:Text('${filmBody.title}',style:TextStyle(color: Color(0xff555555)),maxLines: 1,overflow: TextOverflow.ellipsis,) ,)
               ],),) ,onTap: (){
-
+                Navigator.push(context, CupertinoPageRoute(builder: (context){
+                  return FilmDetailPage(filmBody.detail,filmBody.title);
+                }));
               },);
             }else{
               _page++;
