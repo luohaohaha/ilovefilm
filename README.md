@@ -1,16 +1,15 @@
 # ilovefilm
 
-A new Flutter application.
+这个应用是用于flutter爬网站学习
 
 ## Getting Started
+- [电影网站资源](https://www.jianshu.com/p/5dc63d68bc93)
+- 目前的想法是加上侧边栏可选电影资源来源。
+- 其他还没想好怎么写
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.io/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.io/docs/cookbook)
-
-For help getting started with Flutter, view our 
-[online documentation](https://flutter.io/docs), which offers tutorials, 
-samples, guidance on mobile development, and a full API reference.
+## 进度
+- [x] 中国高清网列表
+- [ ] 音范丝列表
+- [ ] 详情页面
+- [ ] 下载bt地址解析
+- [ ] 侧边栏片源切换
