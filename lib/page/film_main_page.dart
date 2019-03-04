@@ -30,7 +30,27 @@ class FilmMainPageState extends State<FilmMainPage>  with TickerProviderStateMix
       Expanded(child: Container(color: Color(0x55cccccc),child:TabBarView(children: _menus.map((menu){
     return FilmListPage(menu.link);
     }).toList(),controller: _controller,) ,),),
-    ],),);
+    ],),drawer: Drawer(child:ListView(children: <Widget>[
+      DrawerHeader(
+        decoration: BoxDecoration(
+          image: DecorationImage(image: AssetImage('images/flutter_drawer_bg.png'),fit: BoxFit.cover)
+        ),
+      ),
+      ListTile(
+        title: Text('中国高清网'),
+        onTap: () {
+          // Update the state of the app
+          // ...
+        },
+      ),
+      ListTile(
+        title: Text('音范丝'),
+        onTap: () {
+          // Update the state of the app
+          // ...
+        },
+      ),
+    ],padding:  EdgeInsets.all(0.0),) ,),);
   }
 
   @override
@@ -90,6 +110,8 @@ class _FilmListPageState extends State<FilmListPage> with AutomaticKeepAliveClie
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
+    //切记这一行——super.build(context);一定要加，不然Navigator.push/Navigator.pop会导致控件树重绘
+    super.build(context);
     return  _content ??BaseDialog.getContentLoading();
   }
 
@@ -104,63 +126,67 @@ class _FilmListPageState extends State<FilmListPage> with AutomaticKeepAliveClie
     if(!_hasMore)
       return;
     var _url = _page >1?'${widget._url}/page/$_page':widget._url;
-    var response = await request.get('$_url');
-    var filmDocument = parse(response.body);
-    List<FilmBody> films = filmDocument.getElementById('post_container').getElementsByTagName('li').map((element){
-      FilmBody filmBody = FilmBody();
-      var a = element.getElementsByClassName('thumbnail').first.getElementsByTagName('a').first;
-      filmBody.title = a.attributes['title'];
-      filmBody.detail = a.attributes['href'];
-      filmBody.img = a.getElementsByTagName('img').first.attributes['src'];
-      filmBody.date = element.getElementsByClassName('info_date info_ico').first.text;
-      StringBuffer buffer = StringBuffer();
-      element.getElementsByClassName('info_category info_ico').first.getElementsByTagName('a').forEach((a){
-        buffer.write(a.text);
-        buffer.write('、');
-      });
-      filmBody.tag = buffer.toString().substring(0,buffer.length-1);
-      return filmBody;
-    }).toList();
+    try {
+      var response = await request.get('$_url');
+      var filmDocument = parse(response.body);
+      List<FilmBody> films = filmDocument.getElementById('post_container').getElementsByTagName('li').map((element){
+            FilmBody filmBody = FilmBody();
+            var a = element.getElementsByClassName('thumbnail').first.getElementsByTagName('a').first;
+            filmBody.title = a.attributes['title'];
+            filmBody.detail = a.attributes['href'];
+            filmBody.img = a.getElementsByTagName('img').first.attributes['src'];
+            filmBody.date = element.getElementsByClassName('info_date info_ico').first.text;
+            StringBuffer buffer = StringBuffer();
+            element.getElementsByClassName('info_category info_ico').first.getElementsByTagName('a').forEach((a){
+              buffer.write(a.text);
+              buffer.write('、');
+            });
+            filmBody.tag = buffer.toString().substring(0,buffer.length-1);
+            return filmBody;
+          }).toList();
       if(films.length >= 18){
-        _hasMore = true;
-      }else{
-        _hasMore = false;
-      }
+              _hasMore = true;
+            }else{
+              _hasMore = false;
+            }
       _allFilms.addAll(films);
       int count = 18 > _allFilms.length ? _allFilms.length : _allFilms.length + 1;
       _content = RefreshIndicator(
-        child: StaggeredGridView.countBuilder(
-          itemCount: count,
-          crossAxisCount: 2,
-          itemBuilder:(context,position){
-            if(position < count-1 || count < 18) {
-              FilmBody filmBody = _allFilms[position];
-              return InkWell(child:Card(child:Column(children: <Widget>[
-                Image.network(filmBody.img),
-                Container(padding: EdgeInsets.all(8.0),child:Text('${filmBody.title}',style:TextStyle(color: Color(0xff555555)),maxLines: 1,overflow: TextOverflow.ellipsis,) ,)
-              ],),) ,onTap: (){
-                Navigator.push(context, CupertinoPageRoute(builder: (context){
-                  return FilmDetailPage(filmBody.detail,filmBody.title);
-                }));
-              },);
-            }else{
-              _page++;
-              _loadMore();
-              return BaseDialog.getLoadMoreFoot(_hasMore);
-            }
-          },shrinkWrap: true,staggeredTileBuilder:(index) {
-            if(index < count-1 || count < 18) {
-              return StaggeredTile.fit(1);
-            }else{
-             return  StaggeredTile.fit(2);
-            }
-        },),onRefresh: (){
-          _allFilms.clear();
-        _hasMore = true;
-        _page = 1;
-        return _loadMore();
-      },
-      );
+              child: StaggeredGridView.countBuilder(
+                itemCount: count,
+                crossAxisCount: 2,
+                itemBuilder:(context,position){
+                  if(position < count-1 || count < 18) {
+                    FilmBody filmBody = _allFilms[position];
+                    return InkWell(child:Card(child:Column(children: <Widget>[
+                      Image.network(filmBody.img),
+                      Container(padding: EdgeInsets.all(8.0),child:Text('${filmBody.title}',style:TextStyle(color: Color(0xff555555)),maxLines: 1,overflow: TextOverflow.ellipsis,) ,)
+                    ],),) ,onTap: (){
+                      Navigator.push(context, CupertinoPageRoute(builder: (context){
+                        return FilmDetailPage(filmBody.detail,filmBody.title);
+                      }));
+                    },);
+                  }else{
+                    _page++;
+                    _loadMore();
+                    return BaseDialog.getLoadMoreFoot(_hasMore);
+                  }
+                },shrinkWrap: true,staggeredTileBuilder:(index) {
+                  if(index < count-1 || count < 18) {
+                    return StaggeredTile.fit(1);
+                  }else{
+                   return  StaggeredTile.fit(2);
+                  }
+              },),onRefresh: (){
+                _allFilms.clear();
+              _hasMore = true;
+              _page = 1;
+              return _loadMore();
+            },
+            );
+    } catch (e) {
+      _content = Center(child: Text('数据解析失败'),);
+    }
       setState(() {
       });
     }
