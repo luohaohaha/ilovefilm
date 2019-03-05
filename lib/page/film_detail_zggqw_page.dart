@@ -5,21 +5,21 @@ import 'package:ilovefilm/util/film_dialog_util.dart';
 import 'package:html/parser.dart' show parse;
 import 'package:url_launcher/url_launcher.dart';
 
-class FilmDetailPage extends StatefulWidget{
+class FilmDetailZGGQWPage extends StatefulWidget{
   final _detailUrl;
   final _name;
 
-  FilmDetailPage(this._detailUrl,this._name);
+  FilmDetailZGGQWPage(this._detailUrl,this._name);
 
   @override
   State<StatefulWidget> createState() {
     // TODO: implement createState
-    return FilmDetailPageState();
+    return FilmDetailZGGQWPageState();
   }
 
 }
 
-class FilmDetailPageState  extends State<FilmDetailPage>{
+class FilmDetailZGGQWPageState  extends State<FilmDetailZGGQWPage>{
   var _content;
   @override
   Widget build(BuildContext context) {
@@ -89,7 +89,7 @@ class FilmDetailPageState  extends State<FilmDetailPage>{
           //处理磁力链接点击事件跳转
           if(pText.contains('&&')){
            List<String>texts = pText.split('&&');
-            return InkWell(child: Container(child: Text(texts[0],style: TextStyle(color: Colors.white,height: 1.5)),padding: EdgeInsets.all(8.0),decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(5.0)),color:Theme.of(context).primaryColor ),),onTap: (){
+            return InkWell(child: Container(child: Text(texts[0],style: TextStyle(color: Colors.white,height: 1.5)),padding: EdgeInsets.all(8.0),margin:EdgeInsets.only(bottom: 8.0),decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(5.0)),color:Theme.of(context).primaryColor ),),onTap: (){
               print('magnet ======== ${texts[1]}');
               _launcherUrl(texts[1]);
             },);
