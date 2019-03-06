@@ -55,12 +55,12 @@ class FilmDetailYinfansPageState  extends State<FilmDetailYinfansPage>{
         String magnet;
         //获取磁力链接
         try {
-          magnet = p.getElementsByTagName('span').first.getElementsByTagName('a').first.attributes['href'];
+          magnet = p.getElementsByTagName('a').first.attributes['href'];
         } catch (e) {
           magnet = null;
         }
         //拼接，暂时用&&标记
-        if(null !=magnet){
+        if(null !=magnet && !magnet.contains('imdb') && !magnet.contains('douban')){
           text+='&&$magnet';
         }
         ps.add(text);

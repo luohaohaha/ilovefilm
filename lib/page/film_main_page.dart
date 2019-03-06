@@ -4,6 +4,7 @@ import 'package:http/http.dart' as request;
 import 'package:ilovefilm/channel/film_channel.dart';
 import 'package:ilovefilm/page/film_detail_yinfans_page.dart';
 import 'package:ilovefilm/page/film_detail_zggqw_page.dart';
+import 'package:ilovefilm/page/film_search_page.dart';
 import 'package:ilovefilm/util/film_dialog_util.dart';
 import 'package:html/parser.dart' show parse;
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
@@ -22,15 +23,39 @@ class FilmMainPageState extends State<FilmMainPage>  with TickerProviderStateMix
   int _selectPosition = 0;
   var _page = 1;
   var _url;
-
   List<Menu> _menus;
-
   TabController _controller;
+  bool _isSearch = false;
+  TextEditingController _textEditingController = TextEditingController();
+  var _focus = FocusNode();
 
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    return Scaffold(appBar: AppBar(title: Text('我爱电影'),),
+    return Scaffold(appBar: AppBar(title: _isSearch?TextField(autofocus:true,focusNode:_focus,controller:_textEditingController,decoration: InputDecoration(contentPadding:EdgeInsets.all(8.0),hintText: '请输入搜索关键字',hintStyle: TextStyle(color:  Color(0x88FFFFFF)),focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Color(0x88FFFFFF))),enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color:Color(0x88FFFFFF)))),cursorColor:Colors.white,style: TextStyle(color: Colors.white),onSubmitted: (s){
+      print('onSubmitted$s');
+      setState(() {
+        _isSearch= false;
+        _textEditingController.clear();
+      });
+      String searchUrl = (0==_selectPosition)?'http://gaoqing.la/?s=$s':'http://www.yinfans.com/?s=$s';
+      Navigator.push(context, CupertinoPageRoute(builder: (context){
+        return FilmSearchPage(searchUrl,_selectPosition);
+      }));
+    },):Text('我爱电影'),actions: <Widget>[
+      InkWell(child: Container(child: Icon(_isSearch?Icons.close:Icons.search),padding: EdgeInsets.only(left: 8.0,right: 8.0),),onTap: (){
+        setState(() {
+          _isSearch = !_isSearch;
+          Future.delayed(Duration(milliseconds: 500),(){
+            if(_isSearch){
+              FocusScope.of(context).requestFocus(_focus);
+            }else{
+              FocusScope.of(context).requestFocus(FocusNode());
+            }
+          });
+        });
+      },)
+    ],),
       body: null == _menus ? BaseDialog.getContentLoading() : Column(
         children: <Widget>[
           TabBar(tabs: _menus.map((menu) {
